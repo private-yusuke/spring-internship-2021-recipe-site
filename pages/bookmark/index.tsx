@@ -1,21 +1,23 @@
 import { NextPage } from "next";
-import Head from "../components/head";
-import Header from "../components/header";
-import RecipeList from "../components/recipe-list";
-import { Recipe } from "../lib/recipe";
+import Head from "../../components/head";
+import Header from "../../components/header";
+import RecipeList from "../../components/recipe-list";
+import { Recipe } from "../../lib/recipe";
 import {
+  clearBookmark,
   fetchBookmark,
   initializeBookmark,
   prevOrNextPageExists,
-} from "../lib/client/bookmark";
+} from "../../lib/client/bookmark";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/dist/client/router";
 import {
   SortingOrder,
   sortingOrderToString,
   sortingOrders,
-} from "../lib/client/bookmark";
-import CurrentPageStateMessage from "../components/current-page-state-message";
+} from "../../lib/client/bookmark";
+import CurrentPageStateMessage from "../../components/current-page-state-message";
+import Link from "next/link";
 
 type Props = {
   // このページで表示するレシピのリスト
@@ -28,7 +30,7 @@ type Props = {
   prevRecipeAPIParamsString?: string;
 };
 
-type BookmarkLoadingState = "Loading" | "Error" | "Loaded";
+type BookmarkLoadingState = "Loading" | "Error" | "Loaded" | "Reset";
 
 // 反復処理可能なunion型
 // https://www.kabuku.co.jp/developers/good-bye-typescript-enum
@@ -139,7 +141,7 @@ const TopPage: NextPage = () => {
           id="sorting-order-selector"
           className="w-full"
           onChange={onSortingOrderSelectionChanged}
-          defaultValue={sortingOrder}
+          value={sortingOrder}
         >
           {sortingOrders.map((so) => {
             return (
@@ -155,7 +157,14 @@ const TopPage: NextPage = () => {
       ) : bookmarkLoadingState === "Error" ? (
         <div>Error</div>
       ) : bookmarkedRecipes.length > 0 ? (
-        <RecipeList {...recipeListProps} />
+        <div>
+          <RecipeList {...recipeListProps} />
+          <Link href="bookmark/reset">
+            <div className="block text-center text-lg p-2 mx-5 my-2 mb-4 bg-yellow-200 hover:bg-yellow-300 font-bold rounded">
+              ブックマークを全て削除する
+            </div>
+          </Link>
+        </div>
       ) : (
         <CurrentPageStateMessage message="ブックマークされているレシピが見つかりませんでした。" />
       )}
