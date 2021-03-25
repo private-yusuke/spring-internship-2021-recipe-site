@@ -1,4 +1,5 @@
 import { GetServerSideProps, NextPage } from "next";
+import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
@@ -48,9 +49,7 @@ const TopPage: NextPage<Props> = (props) => {
           prevRecipeAPIParamsString={prevRecipeAPIParamsString}
         />
       ) : (
-        <div>
-          <h1 className="text-center m-2">レシピが見つかりませんでした。</h1>
-        </div>
+        <CurrentPageStateMessage message="メッセージが見つかりませんでした。" />
       )}
     </div>
   );

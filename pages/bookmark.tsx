@@ -4,7 +4,6 @@ import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
 import { Recipe } from "../lib/recipe";
 import {
-  countBookmark,
   fetchBookmark,
   initializeBookmark,
   prevOrNextPageExists,
@@ -16,6 +15,7 @@ import {
   sortingOrderToString,
   sortingOrders,
 } from "../lib/client/bookmark";
+import CurrentPageStateMessage from "../components/current-page-state-message";
 
 type Props = {
   // このページで表示するレシピのリスト
@@ -154,8 +154,10 @@ const TopPage: NextPage = () => {
         <div>Loading...</div>
       ) : bookmarkLoadingState === "Error" ? (
         <div>Error</div>
-      ) : (
+      ) : bookmarkedRecipes.length > 0 ? (
         <RecipeList {...recipeListProps} />
+      ) : (
+        <CurrentPageStateMessage message="ブックマークされているレシピが見つかりませんでした。" />
       )}
     </div>
   );

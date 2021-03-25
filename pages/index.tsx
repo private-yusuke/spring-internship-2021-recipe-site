@@ -1,4 +1,5 @@
 import { GetServerSideProps, NextPage } from "next";
+import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
@@ -31,7 +32,7 @@ const TopPage: NextPage<Props> = (props) => {
       />
       <Header />
       {recipes === null ? (
-        <div>やっています……</div>
+        <CurrentPageStateMessage message="レシピが見つかりませんでした。" />
       ) : (
         <RecipeList
           recipes={recipes}
