@@ -191,9 +191,15 @@ export async function fetchBookmark(
 
     const recipes: Recipe[] = [];
 
+    let requireAdvance = page > 1;
     req.onsuccess = (e) => {
       const cursor = (e.target as IDBRequest).result as IDBCursorWithValue;
 
+      if (requireAdvance) {
+        cursor.advance((page - 1) * BOOKMARK_RECIPE_AMOUNT_PER_PAGE);
+        requireAdvance = false;
+        return;
+      }
       // 最後の要素まで読み取ったか1ページ内に含まれるブックマークを読み切ったら返す
       if (cursor && recipes.length < BOOKMARK_RECIPE_AMOUNT_PER_PAGE) {
         recipes.push(cursor.value);
