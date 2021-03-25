@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CurrentPageStateMessage from "../../components/current-page-state-message";
 import Head from "../../components/head";
 import Header from "../../components/header";

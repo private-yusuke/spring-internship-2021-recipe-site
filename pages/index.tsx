@@ -1,4 +1,4 @@
-import { GetServerSideProps, GetStaticProps, NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
 import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";

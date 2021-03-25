@@ -1,21 +1,20 @@
 import { GetStaticProps, NextPage } from "next";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import Head from "../../components/head";
 import Header from "../../components/header";
-import {
-  getRecipe,
-  getRecipes,
-  GetRecipesResponse,
-  Recipe,
-} from "../../lib/recipe";
 import {
   initializeBookmark,
   isInBookmark,
   toggleBookmark,
   updateBookmark,
 } from "../../lib/client/bookmark";
-import { useRouter } from "next/dist/client/router";
-import Image from "next/image";
+import {
+  getRecipe,
+  getRecipes,
+  GetRecipesResponse,
+  Recipe,
+} from "../../lib/recipe";
 
 type Props = {
   // ページで表示するレシピ

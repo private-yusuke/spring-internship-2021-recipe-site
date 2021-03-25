@@ -4,7 +4,6 @@ import Header from "../../components/header";
 import RecipeList from "../../components/recipe-list";
 import { Recipe } from "../../lib/recipe";
 import {
-  clearBookmark,
   fetchBookmark,
   initializeBookmark,
   prevOrNextPageExists,
