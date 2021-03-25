@@ -180,7 +180,7 @@ export async function fetchBookmark(
       );
     } else {
       req = objStore
-        .index("id")
+        .index("published_at")
         .openCursor(
           null,
           sortingOrder === "PublishedDateReverseChronologicalOrder"
