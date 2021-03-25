@@ -33,6 +33,7 @@ export function sortingOrderToString(sortingOrder: SortingOrder): string {
 
 export async function initializeBookmark(): Promise<void> {
   return new Promise<void>((resolve, reject) => {
+    if (bookmarkDB) resolve();
     const req = indexedDB.open(BOOKMARK_DB_NAME, BOOKMARK_DB_VERSION);
 
     // バージョンが変更された or 初めて利用したときはデータベースを作成しなおす
