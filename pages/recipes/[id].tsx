@@ -9,10 +9,8 @@ import {
   Recipe,
 } from "../../lib/recipe";
 import {
-  fetchBookmark,
   initializeBookmark,
   isInBookmark,
-  clearBookmark,
   toggleBookmark,
   updateBookmark,
 } from "../../lib/client/bookmark";
@@ -24,13 +22,20 @@ type Props = {
   recipe: Recipe;
 };
 
+/**
+ * このレシピのブックマーク登録状況の読み込みなどを含めた状態
+ */
 type BookmarkState = "Loading" | "Error" | "Bookmarked" | "NotBookmarked";
 
+/**
+ * 各レシピページ
+ */
 const RecipePage: NextPage<Props> = (props) => {
-  const router = useRouter();
   const { recipe } = props;
   const [bookmarkState, setBookmarkState] = useState<BookmarkState>("Loading");
 
+  // ページを開いたときにクライアントサイドでレシピがブックマークされているか調べる。
+  // 同時に、ブックマークで保存されているレシピ情報を新しく取得したものに更新する。
   useEffect(() => {
     (async () => {
       let state: BookmarkState;
@@ -49,6 +54,10 @@ const RecipePage: NextPage<Props> = (props) => {
     })();
   }, []);
 
+  /**
+   * ブックマーク追加/削除ボタンを押したときのハンドラ
+   * ブックマークの追加/削除の切り替えを行う
+   */
   const onClickBookmarkButton = async (e) => {
     const bookmarked = await toggleBookmark(recipe);
     setBookmarkState(bookmarked ? "Bookmarked" : "NotBookmarked");
@@ -62,6 +71,7 @@ const RecipePage: NextPage<Props> = (props) => {
         image={recipe.image_url}
       />
       <Header />
+      {/* レシピがある場合にレシピ詳細情報を描画しているが、このチェックが無くてもレシピが無い場合は 404 のエラーページが描画されるはず */}
       {recipe && (
         <main>
           {recipe.image_url ? (
@@ -136,6 +146,7 @@ const RecipePage: NextPage<Props> = (props) => {
   );
 };
 
+// /recipes を10ページ分叩いて得られる結果をキャッシュする
 export const getStaticPaths = async () => {
   if (process.env.NODE_ENV == "development")
     return {
