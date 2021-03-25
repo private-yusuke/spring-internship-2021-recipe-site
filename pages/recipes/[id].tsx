@@ -65,7 +65,7 @@ const RecipePage: NextPage<Props> = (props) => {
       {recipe && (
         <main>
           {recipe.image_url ? (
-            <div className="w-full flex justify-content">
+            <div className="flex justify-center">
               <Image
                 src={recipe.image_url}
                 alt="レシピ画像"

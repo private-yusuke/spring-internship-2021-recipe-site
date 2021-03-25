@@ -13,7 +13,7 @@ const RecipeListElement: FC<{ recipe: Recipe }> = ({ children, recipe }) => {
         className="recipe-element-container flex items-center m-4"
         key={recipe.id}
       >
-        <div className="recipe-image-container mr-4 mt-4 flex-1">
+        <div className="recipe-image-container mr-4 mt-4 flex-1 text-center">
           {recipe.image_url ? (
             <Image
               src={recipe.image_url}
