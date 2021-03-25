@@ -1,8 +1,14 @@
 // [こちら](https://gist.github.com/hokaccha/0db2c6c26ec0f7dfc680cf5010e61180#api%E4%BB%95%E6%A7%98%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E5%9E%8B)を流用
 
-import api from "./api-client";
-import { API_ENDPOINT_RECIPES, API_ENDPOINT_SEARCH } from "./constants";
+import {
+  ORIGIN_API_ENDPOINT_RECIPES,
+  ORIGIN_API_ENDPOINT_SEARCH,
+} from "./constants";
+import api from "./server/api-client";
 
+/**
+ * レシピ
+ */
 export type Recipe = {
   // レシピID
   id: number;
@@ -40,7 +46,10 @@ export type Recipe = {
   related_recipes: number[];
 };
 
-type GetRecipesQueryParameter = {
+/**
+ * レシピ取得 API のクエリパラメーター
+ */
+export type GetRecipesQueryParameter = {
   // ページネーションする場合に指定するページ番号。
   page?: number;
 
@@ -49,7 +58,10 @@ type GetRecipesQueryParameter = {
   id?: string;
 };
 
-type GetRecipesResponse = {
+/**
+ * レシピ取得 API のレスポンス
+ */
+export type GetRecipesResponse = {
   // レシピ一覧
   recipes: Recipe[];
 
@@ -60,24 +72,30 @@ type GetRecipesResponse = {
   };
 };
 
+/**
+ * レシピ取得 API を叩き、結果を返します
+ * @param query ページ指定やレシピ ID（またはその列）が入っているクエリパラメーター
+ * @returns レシピ取得 API が返す結果
+ */
 export async function getRecipes(
   query?: GetRecipesQueryParameter
 ): Promise<GetRecipesResponse> {
-  // 開発中に API サーバーを不必要に叩きすぎないようにする
-  // if (process.env.NODE_ENV === "development")
-  //   return require("../data/recipes.json") as Response;
-
   let params = {};
-  if (query.page) params["page"] = query.page.toString();
-  if (query.id) params["id"] = query.id;
+  if (query) {
+    if (query.page) params["page"] = query.page.toString();
+    if (query.id) params["id"] = query.id;
+  }
 
   const req = await api(
-    `${API_ENDPOINT_RECIPES}?${new URLSearchParams(params)}`
+    `${ORIGIN_API_ENDPOINT_RECIPES}?${new URLSearchParams(params)}`
   );
   return (await req.json()) as GetRecipesResponse;
 }
 
-type SearchRecipesQueryParameter = {
+/**
+ * レシピ検索 API のクエリパラメーター
+ */
+export type SearchRecipesQueryParameter = {
   // 検索キーワード。マルチバイト文字列の場合は URL Encode が必用。
   keyword: string;
 
@@ -85,6 +103,9 @@ type SearchRecipesQueryParameter = {
   page?: number;
 };
 
+/**
+ * レシピ検索 API のレスポンス
+ */
 export type SearchRecipesResponse = {
   // 検索にヒットしたレシピ一覧
   recipes: Recipe[];
@@ -96,23 +117,32 @@ export type SearchRecipesResponse = {
   };
 };
 
+/**
+ * レシピ検索 API を叩き、結果を返します
+ * @param query キーワードやページ指定が入っているクエリパラメーター
+ * @returns レシピ検索 API が返す結果
+ */
 export async function searchRecipes(
   query?: SearchRecipesQueryParameter
 ): Promise<SearchRecipesResponse> {
   let params = { keyword: query.keyword };
   if (query.page) params["page"] = query.page.toString();
 
-  const req = await api(
-    `${API_ENDPOINT_SEARCH}?${new URLSearchParams(params)}`
-  );
+  const url = `${ORIGIN_API_ENDPOINT_SEARCH}?${new URLSearchParams(params)}`;
+  const req = await api(url);
   const json = await req.json();
   if (!req.ok) throw new Error(json.message);
   return json as SearchRecipesResponse;
 }
 
+/**
+ * 単一レシピ取得 API
+ * @param id 取得するレシピの ID
+ * @returns レシピの詳細
+ */
 export async function getRecipe(id: number): Promise<Recipe | null> {
-  const req = await api(`${API_ENDPOINT_RECIPES}/${id}`);
+  const req = await api(`${ORIGIN_API_ENDPOINT_RECIPES}/${id}`);
   const json = await req.json();
-  if (!req.ok) throw new Error(json.message);
+  if (json.message as any) throw new Error(json.message);
   return json as Recipe;
 }

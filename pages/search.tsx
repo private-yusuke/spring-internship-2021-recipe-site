@@ -1,4 +1,5 @@
 import { GetServerSideProps, NextPage } from "next";
+import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
@@ -22,25 +23,33 @@ type Props = {
 };
 
 const TopPage: NextPage<Props> = (props) => {
+  const {
+    recipes,
+    recipeFound,
+    keyword,
+    nextRecipeAPIParamsString,
+    prevRecipeAPIParamsString,
+  } = props;
+
   return (
     <div>
       <Head
-        title={`${props.keyword} の検索結果 ─ 料理板`}
+        title={`${keyword} の検索結果 ─ 料理板`}
         description="レシピ検索No.?／料理レシピ載せるなら 料理板"
         image="https://placehold.jp/1200x630.png"
       />
       <head>
-        <title>料理板 ─ {props.keyword} の検索結果</title>
+        <title>料理板 ─ {keyword} の検索結果</title>
       </head>
-      <Header searchQuery={props.keyword} />
-      {props.recipeFound ? (
-        <RecipeList {...props} />
+      <Header searchQuery={keyword} />
+      {recipeFound ? (
+        <RecipeList
+          recipes={recipes}
+          nextRecipeAPIParamsString={nextRecipeAPIParamsString}
+          prevRecipeAPIParamsString={prevRecipeAPIParamsString}
+        />
       ) : (
-        <div>
-          <h1 className="text-center m-2">
-            該当するレシピは見つかりませんでした。
-          </h1>
-        </div>
+        <CurrentPageStateMessage message="メッセージが見つかりませんでした。" />
       )}
     </div>
   );
@@ -61,6 +70,14 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
       keyword: query.keyword as string,
       page: Number(query.page as string),
     });
+    if (!response.recipes)
+      return {
+        props: {
+          recipes: [],
+          recipeFound: false,
+          keyword: query.keyword,
+        } as Props,
+      };
   } catch (e) {
     if (e.message == "Not Found") {
       return {

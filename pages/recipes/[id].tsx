@@ -1,15 +1,58 @@
-import { GetServerSideProps, NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
+import { useEffect, useState } from "react";
 import Head from "../../components/head";
 import Header from "../../components/header";
-import { getRecipe, Recipe } from "../../lib/recipe";
+import {
+  getRecipe,
+  getRecipes,
+  GetRecipesResponse,
+  Recipe,
+} from "../../lib/recipe";
+import {
+  fetchBookmark,
+  initializeBookmark,
+  isInBookmark,
+  clearBookmark,
+  toggleBookmark,
+  updateBookmark,
+} from "../../lib/client/bookmark";
+import { useRouter } from "next/dist/client/router";
+import Image from "next/image";
 
 type Props = {
   // ページで表示するレシピ
   recipe: Recipe;
 };
 
+type BookmarkState = "Loading" | "Error" | "Bookmarked" | "NotBookmarked";
+
 const RecipePage: NextPage<Props> = (props) => {
+  const router = useRouter();
   const { recipe } = props;
+  const [bookmarkState, setBookmarkState] = useState<BookmarkState>("Loading");
+
+  useEffect(() => {
+    (async () => {
+      let state: BookmarkState;
+      try {
+        await initializeBookmark();
+        let bookmarked = await isInBookmark(recipe.id);
+        state = bookmarked ? "Bookmarked" : "NotBookmarked";
+
+        // ブックマークされていた場合はブックマークのデータベース内の当該レシピの情報更新を行う
+        if (bookmarked) updateBookmark(recipe);
+      } catch (e) {
+        console.error(e);
+        state = "Error";
+      }
+      setBookmarkState(state);
+    })();
+  }, []);
+
+  const onClickBookmarkButton = async (e) => {
+    const bookmarked = await toggleBookmark(recipe);
+    setBookmarkState(bookmarked ? "Bookmarked" : "NotBookmarked");
+  };
 
   return (
     <div>
@@ -22,7 +65,15 @@ const RecipePage: NextPage<Props> = (props) => {
       {recipe && (
         <main>
           {recipe.image_url ? (
-            <img src={recipe.image_url} alt="レシピ画像" className="w-full" />
+            <div className="flex justify-center">
+              <Image
+                src={recipe.image_url}
+                alt="レシピ画像"
+                width={400}
+                height={250}
+                objectFit="contain"
+              />
+            </div>
           ) : (
             // レシピ画像が無い場合は絵文字を表示
             <p className="text-9xl text-center">🍽️</p>
@@ -39,12 +90,32 @@ const RecipePage: NextPage<Props> = (props) => {
 
           <p className="m-3">{recipe.description}</p>
 
+          <div className="flex justify-center">
+            <button
+              className="text-lg p-2 mx-5 my-2 mb-4 bg-yellow-200 hover:bg-yellow-300 font-bold rounded"
+              onClick={onClickBookmarkButton}
+              disabled={
+                bookmarkState === "Loading" || bookmarkState === "Error"
+              }
+            >
+              {bookmarkState === "Loading"
+                ? "⌛ 読込中"
+                : bookmarkState === "NotBookmarked"
+                ? "📌 レシピを保存"
+                : bookmarkState === "Bookmarked"
+                ? "🗑️ ブックマーク解除"
+                : bookmarkState === "Error"
+                ? "❌ エラー"
+                : "❓ Unexpected state"}
+            </button>
+          </div>
+
           <h3 className="px-2 py-1 bg-gray-300 mb-2">材料</h3>
           <div className="divide-y">
             {recipe.ingredients
               .filter((ing) => ing.name !== "")
               .map((ing, i) => (
-                <div className="flex justify-between">
+                <div className="flex justify-between" key={i}>
                   <span className="font-semibold m-2 ml-4">{ing.name}</span>
                   <span className="m-2 mr-4">{ing.quantity}</span>
                 </div>
@@ -54,7 +125,9 @@ const RecipePage: NextPage<Props> = (props) => {
           <h3 className="px-2 py-1 bg-gray-300 mb-2">手順</h3>
           <ol className="divide-y list-decimal list-inside">
             {recipe.steps.map((step, i) => (
-              <li className="p-2">{step}</li>
+              <li className="p-2" key={i}>
+                {step}
+              </li>
             ))}
           </ol>
         </main>
@@ -63,10 +136,29 @@ const RecipePage: NextPage<Props> = (props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({
-  params,
-  req,
-}) => {
+export const getStaticPaths = async () => {
+  if (process.env.NODE_ENV == "development")
+    return {
+      paths: [],
+      fallback: "blocking",
+    };
+  let response: GetRecipesResponse;
+  let page = 1;
+  const paths: string[] = [];
+  do {
+    response = await getRecipes({ page });
+    response.recipes.forEach((recipe) => {
+      paths.push(`/recipes/${recipe.id}`);
+    });
+    page++;
+  } while (!(response as any).message && page < 10);
+  return {
+    paths,
+    fallback: "blocking",
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
   const id = Number(params?.id);
   if (id === 0 || isNaN(id)) {
     return {
@@ -85,6 +177,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     }
     return {
       props: { recipe: recipe },
+      revalidate: 60 * 5,
     };
   }
 };

@@ -1,4 +1,5 @@
 import { GetServerSideProps, NextPage } from "next";
+import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
@@ -16,6 +17,12 @@ type Props = {
 };
 
 const TopPage: NextPage<Props> = (props) => {
+  const {
+    recipes,
+    nextRecipeAPIParamsString,
+    prevRecipeAPIParamsString,
+  } = props;
+
   return (
     <div>
       <Head
@@ -24,7 +31,15 @@ const TopPage: NextPage<Props> = (props) => {
         image="https://placehold.jp/1200x630.png"
       />
       <Header />
-      <RecipeList {...props} />
+      {recipes === null ? (
+        <CurrentPageStateMessage message="レシピが見つかりませんでした。" />
+      ) : (
+        <RecipeList
+          recipes={recipes}
+          nextRecipeAPIParamsString={nextRecipeAPIParamsString}
+          prevRecipeAPIParamsString={prevRecipeAPIParamsString}
+        />
+      )}
     </div>
   );
 };
