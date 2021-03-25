@@ -13,6 +13,9 @@ type Props = {
 
   // ページネーション可能なとき、前のページに遷移するときに利用するパラメータを格納
   prevRecipeAPIParamsString?: string;
+
+  // ページネーションするときに遷移する先のページへの相対リンク
+  linkBasePath?: string;
 };
 
 /**
@@ -25,6 +28,7 @@ const RecipeList: FC<Props> = (props) => {
     recipes,
     nextRecipeAPIParamsString,
     prevRecipeAPIParamsString,
+    linkBasePath,
   } = props;
 
   return (
@@ -38,7 +42,11 @@ const RecipeList: FC<Props> = (props) => {
       <footer className="flex justify-between m-4">
         <div>
           {prevRecipeAPIParamsString != null && (
-            <Link href={`${router.basePath}?${prevRecipeAPIParamsString}`}>
+            <Link
+              href={`${
+                linkBasePath || router.basePath
+              }?${prevRecipeAPIParamsString}`}
+            >
               前のページ
             </Link>
           )}
@@ -47,7 +55,7 @@ const RecipeList: FC<Props> = (props) => {
           {nextRecipeAPIParamsString != null && (
             <Link
               href={`${
-                router.basePath
+                linkBasePath || router.basePath
               }?${nextRecipeAPIParamsString.toString()}`}
             >
               次のページ

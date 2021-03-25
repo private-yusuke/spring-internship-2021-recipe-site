@@ -1,4 +1,4 @@
-import { GetServerSideProps, NextPage } from "next";
+import { GetServerSideProps, GetStaticProps, NextPage } from "next";
 import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
@@ -38,15 +38,16 @@ const TopPage: NextPage<Props> = (props) => {
           recipes={recipes}
           nextRecipeAPIParamsString={nextRecipeAPIParamsString}
           prevRecipeAPIParamsString={prevRecipeAPIParamsString}
+          linkBasePath="/search"
         />
       )}
     </div>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+export const getStaticProps: GetStaticProps = async () => {
   const response = await getRecipes({
-    page: Number(query.page as string),
+    page: 1,
   });
 
   let nextRecipeAPIParamsString;
@@ -65,6 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
       nextRecipeAPIParamsString,
       prevRecipeAPIParamsString,
     } as Props,
+    revalidate: 60,
   };
 };
 

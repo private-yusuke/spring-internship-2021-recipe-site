@@ -3,7 +3,13 @@ import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
-import { Recipe, searchRecipes, SearchRecipesResponse } from "../lib/recipe";
+import {
+  getRecipes,
+  GetRecipesResponse,
+  Recipe,
+  searchRecipes,
+  SearchRecipesResponse,
+} from "../lib/recipe";
 
 type Props = {
   // このページで表示するレシピのリスト
@@ -34,13 +40,12 @@ const TopPage: NextPage<Props> = (props) => {
   return (
     <div>
       <Head
-        title={`${keyword} の検索結果 ─ 料理板`}
+        title={
+          keyword ? `${keyword} の検索結果 ─ 料理板` : `レシピ一覧 ─ 料理板`
+        }
         description="レシピ検索No.?／料理レシピ載せるなら 料理板"
         image="https://placehold.jp/1200x630.png"
       />
-      <head>
-        <title>料理板 ─ {keyword} の検索結果</title>
-      </head>
       <Header searchQuery={keyword} />
       {recipeFound ? (
         <RecipeList
@@ -56,7 +61,7 @@ const TopPage: NextPage<Props> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  if (!query.keyword)
+  if (!query.keyword && !query.page)
     return {
       redirect: {
         statusCode: 301,
@@ -64,12 +69,15 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
       },
     };
 
-  let response: SearchRecipesResponse;
+  let response: SearchRecipesResponse | GetRecipesResponse;
   try {
-    response = await searchRecipes({
-      keyword: query.keyword as string,
-      page: Number(query.page as string),
-    });
+    if (!query.keyword)
+      response = await getRecipes({ page: Number(query.page as string) });
+    else
+      response = await searchRecipes({
+        keyword: query.keyword as string,
+        page: Number(query.page as string),
+      });
     if (!response.recipes)
       return {
         props: {
@@ -84,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
         props: {
           recipes: [],
           recipeFound: false,
-          keyword: query.keyword,
+          keyword: query.keyword || "",
         } as Props,
       };
     } else throw e;
@@ -104,7 +112,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     props: {
       recipes: response.recipes,
       recipeFound: true,
-      keyword: query.keyword,
+      keyword: query.keyword || "",
       nextRecipeAPIParamsString,
       prevRecipeAPIParamsString,
     } as Props,
