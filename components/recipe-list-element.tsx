@@ -22,17 +22,25 @@ type BookmarkState =
 const RecipeListElement: FC<{ recipe: Recipe }> = ({ children, recipe }) => {
   const [bookmarkState, setBookmarkState] = useState<BookmarkState>("Loading");
 
+  // useEffect 内の非同期処理で local state を変更するときの注意点
+  // https://hbsnow.dev/blog/react-async-useeffect-localstate/
   useEffect(() => {
+    let isMounted = true;
     (async () => {
+      let newBookmarkState: BookmarkState;
       try {
         await initializeBookmark();
         const isBookmarked = await isInBookmark(recipe.id);
-        setBookmarkState(isBookmarked ? "Bookmarked" : "NotBookmarked");
+        newBookmarkState = isBookmarked ? "Bookmarked" : "NotBookmarked";
       } catch (e) {
-        setBookmarkState("Error");
+        newBookmarkState = "Error";
         return;
       }
+      if (isMounted) setBookmarkState(newBookmarkState);
     })();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const onBookmarkButtonClicked = async (_) => {
