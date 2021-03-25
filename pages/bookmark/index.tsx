@@ -17,6 +17,7 @@ import {
 } from "../../lib/client/bookmark";
 import CurrentPageStateMessage from "../../components/current-page-state-message";
 import Link from "next/link";
+import getCurrentFullUrl from "../../lib/current-full-url";
 
 type Props = {
   // このページで表示するレシピのリスト
@@ -63,6 +64,7 @@ const TopPage: NextPage = () => {
 
   useEffect(() => {
     (async () => {
+      let params = new URL(getCurrentFullUrl(router.asPath)).searchParams;
       // 読み込み中の表示に切り替え
       setBookmarkLoadingState("Loading");
 
@@ -75,9 +77,9 @@ const TopPage: NextPage = () => {
       }
 
       let state: BookmarkLoadingState;
-      let page = router.query.page ? Number(router.query.page) : 1;
+      let page = params.get("page") ? Number(params.get("page")) : 1;
       let sortingOrder: SortingOrder =
-        (router.query.sortingOrder as SortingOrder) ||
+        (params.get("sortingOrder") as SortingOrder) ||
         "BookmarkedDateReverseChronologicalOrder";
 
       setSortingOrder(sortingOrder);
@@ -111,7 +113,7 @@ const TopPage: NextPage = () => {
       }
       setBookmarkLoadingState(state);
     })();
-  }, [router.query]);
+  }, [router.asPath]);
 
   // 整列順序が変更されたときは1ページ目からその順に表示させる
   const onSortingOrderSelectionChanged = (e) => {
@@ -170,5 +172,4 @@ const TopPage: NextPage = () => {
     </div>
   );
 };
-
 export default TopPage;
