@@ -43,7 +43,9 @@ export function sortingOrderToString(sortingOrder: SortingOrder): string {
  */
 export async function initializeBookmark(): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
+    // すでに初期化されているように見える場合は即座に resolve
     if (bookmarkDB) resolve(false);
+
     const req = indexedDB.open(BOOKMARK_DB_NAME, BOOKMARK_DB_VERSION);
 
     // バージョンが変更された or 初めて利用したときはデータベースを作成しなおす

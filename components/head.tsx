@@ -1,6 +1,10 @@
 import { useRouter } from "next/dist/client/router";
 import { default as NHead } from "next/head";
 import { FC } from "react";
+import {
+  PAGE_HEAD_DEFAULT_DESCRIPTION,
+  PAGE_HEAD_DEFAULT_IMAGE_URL,
+} from "../lib/constants";
 import getCurrentFullUrl from "../lib/current-full-url";
 
 type Props = {
@@ -12,18 +16,24 @@ type Props = {
 
   /** ページに対応した画像へのリンク */
   image?: string;
+
+  /**
+   * ページに対応する URL。指定しない場合は現在のページのリンクが自動的に指定される
+   */
+  url?: string;
 };
 
 /**
  * それぞれのページで OGP や favicon の設定をするための head タグを模したコンポーネント
- * @param props タイトルや説明、ページに対応した画像へのリンクを含めたオブジェクト
  */
 const Head: FC<Props> = (props) => {
-  let { title, description, image } = props;
-  if (!image) image = "https://placehold.jp/1200x630.png";
-  if (!description) description = "レシピ検索No.?／料理レシピ載せるなら 料理板";
   const router = useRouter();
-  const url = getCurrentFullUrl(router.asPath);
+
+  // ページの説明や対応する画像が指定されなかったときにデフォルトのものに設定する
+  let { title, description, image, url } = props;
+  if (!image) image = PAGE_HEAD_DEFAULT_IMAGE_URL;
+  if (!description) description = PAGE_HEAD_DEFAULT_DESCRIPTION;
+  if (!url) url = getCurrentFullUrl(router.asPath);
 
   return (
     <NHead>

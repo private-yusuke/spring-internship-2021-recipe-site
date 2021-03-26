@@ -1,3 +1,9 @@
+/** 各ページで description を Head で指定しなかったときに利用される説明文 */
+export const PAGE_HEAD_DEFAULT_DESCRIPTION =
+  "レシピ検索No.?／料理レシピ載せるなら 料理板";
+/** 各ページに対応する画像へのリンクを Head で指定しなかったときに利用されるプレースホルダー用画像へのリンク */
+export const PAGE_HEAD_DEFAULT_IMAGE_URL = "https://placehold.jp/1200x630.png";
+
 /** レシピ取得および投稿用 API サーバーのルートへのパス */
 export const ORIGIN_API_SERVER_ROOT = "https://internship-recipe-api.ckpd.co";
 /** キーワードを指定しないレシピ一覧取得用エンドポイントへのパス */
