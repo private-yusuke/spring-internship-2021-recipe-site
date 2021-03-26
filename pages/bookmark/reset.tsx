@@ -4,6 +4,7 @@ import CurrentPageStateMessage from "../../components/current-page-state-message
 import Head from "../../components/head";
 import Header from "../../components/header";
 import { clearBookmark, initializeBookmark } from "../../lib/client/bookmark";
+import { PAGE_NAME } from "../../lib/constants";
 
 /** ブックマークリセット用ページの状態 */
 type ResetPageState = "Loaded" | "Done" | "Error";
@@ -26,7 +27,7 @@ const BookmarkResetPage: NextPage = (_) => {
   };
   return (
     <div>
-      <Head title="ブックマークリセット ─ 料理板" />
+      <Head title={`ブックマークリセット ─ ${PAGE_NAME}`} />
       <Header />
       <CurrentPageStateMessage
         message={

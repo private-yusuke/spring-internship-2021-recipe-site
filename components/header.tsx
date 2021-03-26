@@ -1,6 +1,7 @@
 import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
 import { FC } from "react";
+import { PAGE_NAME } from "../lib/constants";
 
 type Props = {
   /** 検索バーに表示する文字列 */
@@ -40,7 +41,7 @@ const Header: FC<Props> = (props) => {
     <header>
       <Link href="/">
         <div className="p-4 bg-gray-300">
-          <p className="text-lg text-center">料理板</p>
+          <p className="text-lg text-center">{PAGE_NAME}</p>
         </div>
       </Link>
 

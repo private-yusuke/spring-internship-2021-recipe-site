@@ -18,6 +18,7 @@ import {
 import CurrentPageStateMessage from "../../components/current-page-state-message";
 import Link from "next/link";
 import getCurrentFullUrl from "../../lib/current-full-url";
+import { PAGE_NAME } from "../../lib/constants";
 
 /** ブックマークとして表示するレシピの取得状態 */
 type BookmarkLoadingState = "Loading" | "Error" | "Loaded" | "Reset";
@@ -135,7 +136,7 @@ const BookmarkPage: NextPage = () => {
 
   return (
     <div>
-      <Head title="料理板 ─ ブックマーク" />
+      <Head title={`${PAGE_NAME} ─ ブックマーク`} />
       <Header />
       <div className="p-4 border-b-2">
         <select

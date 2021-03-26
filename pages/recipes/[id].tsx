@@ -9,6 +9,7 @@ import {
   toggleBookmark,
   updateBookmark,
 } from "../../lib/client/bookmark";
+import { PAGE_NAME } from "../../lib/constants";
 import {
   getRecipe,
   getRecipes,
@@ -67,7 +68,7 @@ const RecipePage: NextPage<Props> = (props) => {
   return (
     <div>
       <Head
-        title={`${recipe.title} ─ 料理板`}
+        title={`${recipe.title} ─ ${PAGE_NAME}`}
         description={recipe.description}
         image={recipe.image_url}
       />

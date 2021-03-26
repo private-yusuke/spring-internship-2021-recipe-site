@@ -3,6 +3,7 @@ import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
+import { PAGE_NAME } from "../lib/constants";
 import {
   getRecipes,
   GetRecipesResponse,
@@ -41,10 +42,10 @@ const SearchPage: NextPage<Props> = (props) => {
     <div>
       <Head
         title={
-          keyword ? `${keyword} の検索結果 ─ 料理板` : `レシピ一覧 ─ 料理板`
+          keyword
+            ? `${keyword} の検索結果 ─ ${PAGE_NAME}`
+            : `レシピ一覧 ─ ${PAGE_NAME}`
         }
-        description="レシピ検索No.?／料理レシピ載せるなら 料理板"
-        image="https://placehold.jp/1200x630.png"
       />
       <Header searchQuery={keyword} />
       {recipeFound ? (

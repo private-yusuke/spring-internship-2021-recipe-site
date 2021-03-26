@@ -1,6 +1,7 @@
+/** このウェブサイトの名前 */
+export const PAGE_NAME = "料理板";
 /** 各ページで description を Head で指定しなかったときに利用される説明文 */
-export const PAGE_HEAD_DEFAULT_DESCRIPTION =
-  "レシピ検索No.?／料理レシピ載せるなら 料理板";
+export const PAGE_HEAD_DEFAULT_DESCRIPTION = `レシピ検索No.?／料理レシピ載せるなら ${PAGE_NAME}`;
 /** 各ページに対応する画像へのリンクを Head で指定しなかったときに利用されるプレースホルダー用画像へのリンク */
 export const PAGE_HEAD_DEFAULT_IMAGE_URL = "https://placehold.jp/1200x630.png";
 
