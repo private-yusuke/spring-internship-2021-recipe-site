@@ -4,11 +4,20 @@ import { FC } from "react";
 import getCurrentFullUrl from "../lib/current-full-url";
 
 type Props = {
+  /** ページのタイトル */
   title: string;
+
+  /** ページの説明 */
   description?: string;
+
+  /** ページに対応した画像へのリンク */
   image?: string;
 };
 
+/**
+ * それぞれのページで OGP や favicon の設定をするための head タグを模したコンポーネント
+ * @param props タイトルや説明、ページに対応した画像へのリンクを含めたオブジェクト
+ */
 const Head: FC<Props> = (props) => {
   let { title, description, image } = props;
   if (!image) image = "https://placehold.jp/1200x630.png";
@@ -20,6 +29,7 @@ const Head: FC<Props> = (props) => {
     <NHead>
       <title>{props.title}</title>
 
+      {/* OGP 対応箇所 */}
       <meta name="description" content={description} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />

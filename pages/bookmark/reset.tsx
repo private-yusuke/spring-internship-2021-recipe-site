@@ -5,17 +5,21 @@ import Head from "../../components/head";
 import Header from "../../components/header";
 import { clearBookmark, initializeBookmark } from "../../lib/client/bookmark";
 
+/** ブックマークリセット用ページの状態 */
 type ResetPageState = "Loaded" | "Done" | "Error";
 
-const ResetPage: NextPage = (_) => {
+/** ブックマークリセット用ページ */
+const BookmarkResetPage: NextPage = (_) => {
   const [pageState, setPageState] = useState<ResetPageState>("Loaded");
 
+  // リセットボタンが押されたらブックマークのリセットを行う
   const onResetButtonClicked = async (_) => {
     try {
       await initializeBookmark();
       await clearBookmark();
     } catch (e) {
       setPageState("Error");
+      console.error(e);
       return;
     }
     setPageState("Done");
@@ -47,4 +51,4 @@ const ResetPage: NextPage = (_) => {
   );
 };
 
-export default ResetPage;
+export default BookmarkResetPage;

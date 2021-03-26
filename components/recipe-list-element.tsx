@@ -33,6 +33,7 @@ const RecipeListElement: FC<{ recipe: Recipe }> = ({ children, recipe }) => {
         const isBookmarked = await isInBookmark(recipe.id);
         newBookmarkState = isBookmarked ? "Bookmarked" : "NotBookmarked";
       } catch (e) {
+        console.error(e);
         newBookmarkState = "Error";
         return;
       }

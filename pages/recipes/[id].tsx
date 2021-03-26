@@ -33,8 +33,10 @@ const RecipePage: NextPage<Props> = (props) => {
   const { recipe } = props;
   const [bookmarkState, setBookmarkState] = useState<BookmarkState>("Loading");
 
-  // ページを開いたときにクライアントサイドでレシピがブックマークされているか調べる。
-  // 同時に、ブックマークで保存されているレシピ情報を新しく取得したものに更新する。
+  /*
+   * ページを開いたときにクライアントサイドでレシピがブックマークされているか調べる。
+   * 同時に、ブックマークで保存されているレシピ情報を新しく取得したものに更新する。
+   */
   useEffect(() => {
     (async () => {
       let state: BookmarkState;

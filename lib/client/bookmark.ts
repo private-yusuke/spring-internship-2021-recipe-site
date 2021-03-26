@@ -6,6 +6,7 @@ import {
 } from "../constants";
 import { Recipe } from "../recipe";
 
+// データベースはページ読み込みごとに一度だけ初期化され、ここに保持される
 let bookmarkDB: IDBDatabase;
 
 // 反復処理可能なunion型
@@ -18,6 +19,9 @@ export const sortingOrders = [
 ] as const;
 export type SortingOrder = typeof sortingOrders[number];
 
+/**
+ * 与えられた整列順序に対応する画面表示用の文字列を返します。
+ */
 export function sortingOrderToString(sortingOrder: SortingOrder): string {
   switch (sortingOrder) {
     case "PublishedDateChronologicalOrder":
@@ -33,9 +37,13 @@ export function sortingOrderToString(sortingOrder: SortingOrder): string {
   }
 }
 
-export async function initializeBookmark(): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    if (bookmarkDB) resolve();
+/**
+ * ブックマーク用データベースを初期化します。
+ * @returns 初期化に成功した場合は true、すでに初期化されていた場合は false
+ */
+export async function initializeBookmark(): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    if (bookmarkDB) resolve(false);
     const req = indexedDB.open(BOOKMARK_DB_NAME, BOOKMARK_DB_VERSION);
 
     // バージョンが変更された or 初めて利用したときはデータベースを作成しなおす
@@ -63,15 +71,14 @@ export async function initializeBookmark(): Promise<void> {
     // （onupgradeneeded が呼ばれたなら、それが終了した後）データベースを開くことに成功したら resolve
     req.onsuccess = (e: Event) => {
       bookmarkDB = (e.target as IDBOpenDBRequest).result;
-      resolve();
+      resolve(true);
     };
     req.onerror = (_) => reject(req.error);
   });
 }
 
 /**
- * ブックマークに指定したレシピの ID を追加します。
- * すでに追加されている場合は、与えられたレシピの情報に更新します。
+ * ブックマークに指定したレシピを追加します。
  * @param recipe ブックマークに追加するレシピ
  */
 export async function addBookmark(recipe: Recipe): Promise<void> {
@@ -113,7 +120,7 @@ export async function updateBookmark(recipe: Recipe): Promise<void> {
 }
 
 /**
- * ブックマークから指定された ID に対応するレシピを削除します
+ * ブックマークから指定された ID に対応するレシピを削除します。
  * @param id 削除するレシピの ID
  * @returns レシピが削除された場合は true, レシピが存在しなかった場合は false
  */
@@ -158,8 +165,9 @@ export async function isInBookmark(id: number): Promise<boolean> {
 }
 
 /**
- * ブックマークに追加されているレシピの ID を返します。
+ * ブックマークに追加されているレシピの配列を返します。
  * @param page ページネーション可能な場合に指定できるページ番号
+ * @param sortingOrder 返すレシピの配列の整列順序
  * @returns ページに対応するブックマークに追加されたレシピ ID の配列
  */
 export async function fetchBookmark(
@@ -173,6 +181,8 @@ export async function fetchBookmark(
       .objectStore(BOOKMARK_DB_RECIPE_LIST_NAME);
 
     let req: IDBRequest<IDBCursorWithValue>;
+
+    // 整列順序に基づいてカーソルを準備
     if (sortingOrder.startsWith("Bookmarked")) {
       req = objStore.openCursor(
         null,
@@ -193,16 +203,18 @@ export async function fetchBookmark(
 
     const recipes: Recipe[] = [];
 
+    // 1ページ目より後の場合は幾つかのカラムをスキップする必要がある
     let requireAdvance = page > 1;
     req.onsuccess = (e) => {
       const cursor = (e.target as IDBRequest).result as IDBCursorWithValue;
 
       if (requireAdvance) {
+        // そのページ以前のレシピの分だけカーソルを進めておく
         cursor.advance((page - 1) * BOOKMARK_RECIPE_AMOUNT_PER_PAGE);
         requireAdvance = false;
         return;
       }
-      // 最後の要素まで読み取ったか1ページ内に含まれるブックマークを読み切ったら返す
+      // 最後の要素まで読み取ったか1ページ内に含まれるブックマークを読み切ったら resolve で取得済レシピを返す
       if (cursor && recipes.length < BOOKMARK_RECIPE_AMOUNT_PER_PAGE) {
         recipes.push(cursor.value);
         cursor.continue();
@@ -267,8 +279,14 @@ export async function toggleBookmark(recipe: Recipe): Promise<boolean> {
   });
 }
 
+/**
+ * 与えられたページの前後に別のページが存在するか判定します。
+ * @param page 前後のページがあるか調べたいページの番号
+ * @returns [前ページの存在, 後ページの存在]
+ */
 export async function prevOrNextPageExists(page: number): Promise<boolean[]> {
   const bookmarkCount = await countBookmark();
+  // ブックマーク全体のページ数
   const pageNum = Math.ceil(bookmarkCount / BOOKMARK_RECIPE_AMOUNT_PER_PAGE);
 
   let prev = page > 1;

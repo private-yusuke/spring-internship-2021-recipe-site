@@ -3,26 +3,37 @@ import Link from "next/link";
 import { FC } from "react";
 
 type Props = {
+  /** 検索バーに表示する文字列 */
   searchQuery?: string;
 };
 
+/** サイト最上部のタイトルと検索バーのためのコンポーネント */
 const Header: FC<Props> = (props) => {
+  /** 検索バーの input タグに付与される ID */
   const SEARCH_BAR_INPUT_ID = "search-bar-input";
   const router = useRouter();
 
   const onSearchSubmitted = (e) => {
     // エンターが押下されたとき検索を開始
-    if (e.which == 13) onSearchTriggered();
+    if (e.which == 13) startSearch();
   };
 
-  const onSearchTriggered = () => {
+  /**
+   * 検索バーに入力されている文字列で検索を開始します。
+   * @returns 検索を開始したら true、検索を開始しなかった場合は false
+   */
+  const startSearch = () => {
     const elem = document.getElementById(
       SEARCH_BAR_INPUT_ID
     ) as HTMLInputElement;
     const keyword = elem.value;
 
     // 検索窓に何かが入力されていた場合、検索を開始
-    if (keyword) router.push(`/search?keyword=${keyword}`);
+    if (keyword) {
+      router.push(`/search?keyword=${keyword}`);
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -46,7 +57,7 @@ const Header: FC<Props> = (props) => {
           id={SEARCH_BAR_INPUT_ID}
           onKeyPress={onSearchSubmitted}
         />
-        <button className="px-2 text-3xl" onClick={onSearchTriggered}>
+        <button className="px-2 text-3xl" onClick={startSearch}>
           🔎
         </button>
       </div>

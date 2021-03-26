@@ -28,7 +28,7 @@ type Props = {
   prevRecipeAPIParamsString?: string;
 };
 
-const TopPage: NextPage<Props> = (props) => {
+const SearchPage: NextPage<Props> = (props) => {
   const {
     recipes,
     recipeFound,
@@ -119,4 +119,4 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   };
 };
 
-export default TopPage;
+export default SearchPage;

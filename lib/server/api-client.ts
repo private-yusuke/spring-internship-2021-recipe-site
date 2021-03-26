@@ -13,6 +13,7 @@ export default function api(
   let headers = {};
   if (init) headers = init.headers;
 
+  // レシピ取得用 API にアクセスするためにリクエストヘッダーに API キーを設定
   headers[ORIGIN_API_HEADER_X_API_KEY] = process.env.API_HEADER_X_API_KEY;
 
   return fetch(input, { ...init, headers });

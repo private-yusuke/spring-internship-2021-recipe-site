@@ -19,20 +19,11 @@ import CurrentPageStateMessage from "../../components/current-page-state-message
 import Link from "next/link";
 import getCurrentFullUrl from "../../lib/current-full-url";
 
-type Props = {
-  // このページで表示するレシピのリスト
-  recipes: Recipe[];
-
-  // ページネーション可能なとき、次のページに遷移するときに利用するパラメータを格納
-  nextRecipeAPIParamsString?: string;
-
-  // ページネーション可能なとき、前のページに遷移するときに利用するパラメータを格納
-  prevRecipeAPIParamsString?: string;
-};
-
+/** ブックマークとして表示するレシピの取得状態 */
 type BookmarkLoadingState = "Loading" | "Error" | "Loaded" | "Reset";
 
-const TopPage: NextPage = () => {
+/** ブックマークページ */
+const BookmarkPage: NextPage = () => {
   const router = useRouter();
 
   // ブックマークとして表示するレシピの取得状況
@@ -59,8 +50,15 @@ const TopPage: NextPage = () => {
     string | null
   >(null);
 
+  // パスが変わる（つまりページ遷移や整列順序の変更が発生した）ときに実行される
   useEffect(() => {
     (async () => {
+      /*
+       * router.query はリロード時に最初は空のオブジェクトとなって直後に中身が入るようになっているので、
+       * それによって更新処理が2回走るようになってしまい挙動がおかしくなるのを防ぐために
+       * router.asPath を useEffect での監視対象として、router.asPath 自体に含まれる
+       * クエリパラメーターをここで取得するような実装になっている。
+       */
       let params = new URL(getCurrentFullUrl(router.asPath)).searchParams;
       // 読み込み中の表示に切り替え
       setBookmarkLoadingState("Loading");
@@ -70,6 +68,7 @@ const TopPage: NextPage = () => {
         await initializeBookmark();
       } catch (e) {
         setBookmarkLoadingState("Error");
+        console.error(e);
         return;
       }
 
@@ -81,6 +80,10 @@ const TopPage: NextPage = () => {
 
       setSortingOrder(sortingOrder);
 
+      /*
+       * 前後ページの存在を確認し、ある場合はリンク用クエリパラメーター部分の文字列を生成し、
+       * ない場合はリンクを生成しないように（= null を代入）する
+       */
       let [prevPageExists, nextPageExists] = await prevOrNextPageExists(page);
 
       if (prevPageExists)
@@ -100,6 +103,7 @@ const TopPage: NextPage = () => {
         );
       } else setNextRecipeAPIParamsString(null);
 
+      // ブックマーク内のレシピを取得し設定する
       try {
         const recipes = await fetchBookmark(page, sortingOrder);
         setBookmarkedRecipes(recipes);
@@ -169,4 +173,4 @@ const TopPage: NextPage = () => {
     </div>
   );
 };
-export default TopPage;
+export default BookmarkPage;

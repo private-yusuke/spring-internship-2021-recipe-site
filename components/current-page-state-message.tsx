@@ -1,9 +1,11 @@
 import { FC } from "react";
 
 type Props = {
+  /** 表示するメッセージ */
   message: string;
 };
 
+/** 現在のページの状態をメッセージとして表示するためのコンポーネント */
 const CurrentPageStateMessage: FC<Props> = (props) => {
   let { message } = props;
   return (
