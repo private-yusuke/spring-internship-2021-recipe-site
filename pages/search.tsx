@@ -3,7 +3,7 @@ import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
-import { PAGE_NAME } from "../lib/constants";
+import { WEBSITE_NAME } from "../lib/constants";
 import {
   getRecipes,
   GetRecipesResponse,
@@ -43,8 +43,8 @@ const SearchPage: NextPage<Props> = (props) => {
       <Head
         title={
           keyword
-            ? `${keyword} の検索結果 ─ ${PAGE_NAME}`
-            : `レシピ一覧 ─ ${PAGE_NAME}`
+            ? `${keyword} の検索結果 ─ ${WEBSITE_NAME}`
+            : `レシピ一覧 ─ ${WEBSITE_NAME}`
         }
       />
       <Header searchQuery={keyword} />

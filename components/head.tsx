@@ -2,8 +2,8 @@ import { useRouter } from "next/dist/client/router";
 import { default as NHead } from "next/head";
 import { FC } from "react";
 import {
-  PAGE_HEAD_DEFAULT_DESCRIPTION,
-  PAGE_HEAD_DEFAULT_IMAGE_URL,
+  WEBSITE_HEAD_DEFAULT_DESCRIPTION,
+  WEBSITE_HEAD_DEFAULT_IMAGE_URL,
 } from "../lib/constants";
 import getCurrentFullUrl from "../lib/current-full-url";
 
@@ -31,8 +31,8 @@ const Head: FC<Props> = (props) => {
 
   // ページの説明や対応する画像が指定されなかったときにデフォルトのものに設定する
   let { title, description, image, url } = props;
-  if (!image) image = PAGE_HEAD_DEFAULT_IMAGE_URL;
-  if (!description) description = PAGE_HEAD_DEFAULT_DESCRIPTION;
+  if (!image) image = WEBSITE_HEAD_DEFAULT_IMAGE_URL;
+  if (!description) description = WEBSITE_HEAD_DEFAULT_DESCRIPTION;
   if (!url) url = getCurrentFullUrl(router.asPath);
 
   return (

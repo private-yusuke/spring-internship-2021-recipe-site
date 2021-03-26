@@ -1,9 +1,10 @@
 /** このウェブサイトの名前 */
-export const PAGE_NAME = "料理板";
+export const WEBSITE_NAME = "料理板";
 /** 各ページで description を Head で指定しなかったときに利用される説明文 */
-export const PAGE_HEAD_DEFAULT_DESCRIPTION = `レシピ検索No.?／料理レシピ載せるなら ${PAGE_NAME}`;
+export const WEBSITE_HEAD_DEFAULT_DESCRIPTION = `レシピ検索No.?／料理レシピ載せるなら ${WEBSITE_NAME}`;
 /** 各ページに対応する画像へのリンクを Head で指定しなかったときに利用されるプレースホルダー用画像へのリンク */
-export const PAGE_HEAD_DEFAULT_IMAGE_URL = "https://placehold.jp/1200x630.png";
+export const WEBSITE_HEAD_DEFAULT_IMAGE_URL =
+  "https://placehold.jp/1200x630.png";
 
 /** レシピ取得および投稿用 API サーバーのルートへのパス */
 export const ORIGIN_API_SERVER_ROOT = "https://internship-recipe-api.ckpd.co";

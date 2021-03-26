@@ -3,7 +3,7 @@ import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
-import { PAGE_NAME } from "../lib/constants";
+import { WEBSITE_NAME } from "../lib/constants";
 import { getRecipes, Recipe } from "../lib/recipe";
 
 type Props = {
@@ -26,7 +26,7 @@ const TopPage: NextPage<Props> = (props) => {
 
   return (
     <div>
-      <Head title={PAGE_NAME} />
+      <Head title={WEBSITE_NAME} />
       <Header />
       {recipes === null ? (
         <CurrentPageStateMessage message="レシピが見つかりませんでした。" />
