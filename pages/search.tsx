@@ -1,16 +1,16 @@
-import { GetServerSideProps, NextPage } from "next";
-import CurrentPageStateMessage from "../components/current-page-state-message";
-import Head from "../components/head";
-import Header from "../components/header";
-import RecipeList from "../components/recipe-list";
-import { WEBSITE_NAME } from "../lib/constants";
+import { GetServerSideProps, NextPage } from 'next';
+import CurrentPageStateMessage from '../components/current-page-state-message';
+import Head from '../components/head';
+import Header from '../components/header';
+import RecipeList from '../components/recipe-list';
+import { WEBSITE_NAME } from '../lib/constants';
 import {
   getRecipes,
   GetRecipesResponse,
   Recipe,
   searchRecipes,
   SearchRecipesResponse,
-} from "../lib/recipe";
+} from '../lib/recipe';
 
 type Props = {
   // このページで表示するレシピのリスト
@@ -66,7 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     return {
       redirect: {
         statusCode: 301,
-        destination: "/",
+        destination: '/',
       },
     };
 
@@ -88,15 +88,16 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
         } as Props,
       };
   } catch (e) {
-    if (e.message == "Not Found") {
+    if (e.message === 'Not Found') {
       return {
         props: {
           recipes: [],
           recipeFound: false,
-          keyword: query.keyword || "",
+          keyword: query.keyword || '',
         } as Props,
       };
-    } else throw e;
+    }
+    throw e;
   }
 
   let nextRecipeAPIParamsString;
@@ -113,7 +114,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     props: {
       recipes: response.recipes,
       recipeFound: true,
-      keyword: query.keyword || "",
+      keyword: query.keyword || '',
       nextRecipeAPIParamsString,
       prevRecipeAPIParamsString,
     } as Props,

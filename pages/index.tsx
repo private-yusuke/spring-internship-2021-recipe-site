@@ -1,10 +1,10 @@
-import { GetStaticProps, NextPage } from "next";
-import CurrentPageStateMessage from "../components/current-page-state-message";
-import Head from "../components/head";
-import Header from "../components/header";
-import RecipeList from "../components/recipe-list";
-import { PAGE_TOP_REVALIDATE_INTERVAL, WEBSITE_NAME } from "../lib/constants";
-import { getRecipes, Recipe } from "../lib/recipe";
+import { GetStaticProps, NextPage } from 'next';
+import CurrentPageStateMessage from '../components/current-page-state-message';
+import Head from '../components/head';
+import Header from '../components/header';
+import RecipeList from '../components/recipe-list';
+import { PAGE_TOP_REVALIDATE_INTERVAL, WEBSITE_NAME } from '../lib/constants';
+import { getRecipes, Recipe } from '../lib/recipe';
 
 type Props = {
   // このページで表示するレシピのリスト

@@ -1,27 +1,26 @@
-import { NextPage } from "next";
-import Head from "../../components/head";
-import Header from "../../components/header";
-import RecipeList from "../../components/recipe-list";
-import { Recipe } from "../../lib/recipe";
+import { NextPage } from 'next';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/dist/client/router';
+import Link from 'next/link';
+import Head from '../../components/head';
+import Header from '../../components/header';
+import RecipeList from '../../components/recipe-list';
+import { Recipe } from '../../lib/recipe';
 import {
   fetchBookmark,
   initializeBookmark,
   prevOrNextPageExists,
-} from "../../lib/client/bookmark";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/dist/client/router";
-import {
   SortingOrder,
   sortingOrderToString,
   sortingOrders,
-} from "../../lib/client/bookmark";
-import CurrentPageStateMessage from "../../components/current-page-state-message";
-import Link from "next/link";
-import getCurrentFullUrl from "../../lib/current-full-url";
-import { WEBSITE_NAME } from "../../lib/constants";
+} from '../../lib/client/bookmark';
+
+import CurrentPageStateMessage from '../../components/current-page-state-message';
+import getCurrentFullUrl from '../../lib/current-full-url';
+import { WEBSITE_NAME } from '../../lib/constants';
 
 /** ブックマークとして表示するレシピの取得状態 */
-type BookmarkLoadingState = "Loading" | "Error" | "Loaded" | "Reset";
+type BookmarkLoadingState = 'Loading' | 'Error' | 'Loaded' | 'Reset';
 
 /** ブックマークページ */
 const BookmarkPage: NextPage = () => {
@@ -31,14 +30,14 @@ const BookmarkPage: NextPage = () => {
   const [
     bookmarkLoadingState,
     setBookmarkLoadingState,
-  ] = useState<BookmarkLoadingState>("Loading");
+  ] = useState<BookmarkLoadingState>('Loading');
 
   // ブックマークとして表示するレシピの配列
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState<Recipe[]>([]);
 
   // 整列順序
   const [sortingOrder, setSortingOrder] = useState<SortingOrder>(
-    "BookmarkedDateReverseChronologicalOrder"
+    'BookmarkedDateReverseChronologicalOrder'
   );
 
   // 次のページへのリンクに付与されるクエリパラメーターの文字列
@@ -60,24 +59,24 @@ const BookmarkPage: NextPage = () => {
        * router.asPath を useEffect での監視対象として、router.asPath 自体に含まれる
        * クエリパラメーターをここで取得するような実装になっている。
        */
-      let params = new URL(getCurrentFullUrl(router.asPath)).searchParams;
+      const params = new URL(getCurrentFullUrl(router.asPath)).searchParams;
       // 読み込み中の表示に切り替え
-      setBookmarkLoadingState("Loading");
+      setBookmarkLoadingState('Loading');
 
       // ブックマークのデータベースを初期化
       try {
         await initializeBookmark();
       } catch (e) {
-        setBookmarkLoadingState("Error");
+        setBookmarkLoadingState('Error');
         console.error(e);
         return;
       }
 
       let state: BookmarkLoadingState;
-      let page = params.get("page") ? Number(params.get("page")) : 1;
-      let sortingOrder: SortingOrder =
-        (params.get("sortingOrder") as SortingOrder) ||
-        "BookmarkedDateReverseChronologicalOrder";
+      const page = params.get('page') ? Number(params.get('page')) : 1;
+      const sortingOrder: SortingOrder =
+        (params.get('sortingOrder') as SortingOrder) ||
+        'BookmarkedDateReverseChronologicalOrder';
 
       setSortingOrder(sortingOrder);
 
@@ -85,7 +84,7 @@ const BookmarkPage: NextPage = () => {
        * 前後ページの存在を確認し、ある場合はリンク用クエリパラメーター部分の文字列を生成し、
        * ない場合はリンクを生成しないように（= null を代入）する
        */
-      let [prevPageExists, nextPageExists] = await prevOrNextPageExists(page);
+      const [prevPageExists, nextPageExists] = await prevOrNextPageExists(page);
 
       if (prevPageExists)
         setPrevRecipeAPIParamsString(
@@ -108,10 +107,10 @@ const BookmarkPage: NextPage = () => {
       try {
         const recipes = await fetchBookmark(page, sortingOrder);
         setBookmarkedRecipes(recipes);
-        state = "Loaded";
+        state = 'Loaded';
       } catch (e) {
         console.error(e);
-        state = "Error";
+        state = 'Error';
       }
       setBookmarkLoadingState(state);
     })();
@@ -122,7 +121,7 @@ const BookmarkPage: NextPage = () => {
     const newSortingOrder = e.target.value as SortingOrder;
     router.push(
       `/bookmark?${new URLSearchParams({
-        page: "1",
+        page: '1',
         sortingOrder: newSortingOrder,
       })}`
     );
@@ -146,18 +145,16 @@ const BookmarkPage: NextPage = () => {
           onChange={onSortingOrderSelectionChanged}
           value={sortingOrder}
         >
-          {sortingOrders.map((so) => {
-            return (
-              <option value={so} key={so}>
-                {sortingOrderToString(so)}
-              </option>
-            );
-          })}
+          {sortingOrders.map((so) => (
+            <option value={so} key={so}>
+              {sortingOrderToString(so)}
+            </option>
+          ))}
         </select>
       </div>
-      {bookmarkLoadingState === "Loading" ? (
+      {bookmarkLoadingState === 'Loading' ? (
         <div>Loading...</div>
-      ) : bookmarkLoadingState === "Error" ? (
+      ) : bookmarkLoadingState === 'Error' ? (
         <div>Error</div>
       ) : bookmarkedRecipes.length > 0 ? (
         <div>

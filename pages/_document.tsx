@@ -1,4 +1,4 @@
-import Document, { Head, Html, Main, NextScript } from "next/document";
+import Document, { Head, Html, Main, NextScript } from 'next/document';
 
 /**
  * html タグの lang 属性を指定するためのコンポーネント
@@ -8,6 +8,7 @@ class RecipeSiteDocument extends Document {
     const initialProps = await Document.getInitialProps(ctx);
     return { ...initialProps };
   }
+
   render() {
     return (
       <Html lang="ja">

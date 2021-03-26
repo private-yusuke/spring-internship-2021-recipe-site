@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC } from 'react';
 
 type Props = {
   /** 表示するメッセージ */
@@ -7,7 +7,7 @@ type Props = {
 
 /** 現在のページの状態をメッセージとして表示するためのコンポーネント */
 const CurrentPageStateMessage: FC<Props> = (props) => {
-  let { message } = props;
+  const { message } = props;
   return (
     <div>
       <h2 className="text-center m-2">{message}</h2>

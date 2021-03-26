@@ -3,8 +3,8 @@ import {
   BOOKMARK_DB_VERSION,
   BOOKMARK_DB_RECIPE_LIST_NAME,
   BOOKMARK_RECIPE_AMOUNT_PER_PAGE,
-} from "../constants";
-import { Recipe } from "../recipe";
+} from '../constants';
+import { Recipe } from '../recipe';
 
 // データベースはページ読み込みごとに一度だけ初期化され、ここに保持される
 let bookmarkDB: IDBDatabase;
@@ -12,10 +12,10 @@ let bookmarkDB: IDBDatabase;
 // 反復処理可能なunion型
 // https://www.kabuku.co.jp/developers/good-bye-typescript-enum
 export const sortingOrders = [
-  "PublishedDateChronologicalOrder",
-  "PublishedDateReverseChronologicalOrder",
-  "BookmarkedDateChronologicalOrder",
-  "BookmarkedDateReverseChronologicalOrder",
+  'PublishedDateChronologicalOrder',
+  'PublishedDateReverseChronologicalOrder',
+  'BookmarkedDateChronologicalOrder',
+  'BookmarkedDateReverseChronologicalOrder',
 ] as const;
 export type SortingOrder = typeof sortingOrders[number];
 
@@ -24,19 +24,22 @@ export type SortingOrder = typeof sortingOrders[number];
  */
 export function sortingOrderToString(sortingOrder: SortingOrder): string {
   switch (sortingOrder) {
-    case "PublishedDateChronologicalOrder":
-      return "過去に公開された順";
-    case "PublishedDateReverseChronologicalOrder":
-      return "新しく公開された順";
-    case "BookmarkedDateChronologicalOrder":
-      return "過去にブックマークした順";
-    case "BookmarkedDateReverseChronologicalOrder":
-      return "最近ブックマークした順";
+    case 'PublishedDateChronologicalOrder':
+      return '過去に公開された順';
+    case 'PublishedDateReverseChronologicalOrder':
+      return '新しく公開された順';
+    case 'BookmarkedDateChronologicalOrder':
+      return '過去にブックマークした順';
+    case 'BookmarkedDateReverseChronologicalOrder':
+      return '最近ブックマークした順';
     default:
       return null;
   }
 }
 
+class DBNotInitializedError extends Error {}
+
+/* global IDBObjectStoreParameters */
 /**
  * ブックマーク用データベースを初期化します。
  * @returns 初期化に成功した場合は true、すでに初期化されていた場合は false
@@ -65,9 +68,9 @@ export async function initializeBookmark(): Promise<boolean> {
       );
 
       // レシピ ID でブックマークのレシピ登録を削除できるようにインデックスを作成
-      objStore.createIndex("id", "id", { unique: true });
+      objStore.createIndex('id', 'id', { unique: true });
       // 公開順でソートをかけたいのでインデックスを作成
-      objStore.createIndex("published_at", "published_at", { unique: false });
+      objStore.createIndex('published_at', 'published_at', { unique: false });
     };
 
     // （onupgradeneeded が呼ばれたなら、それが終了した後）データベースを開くことに成功したら resolve
@@ -75,7 +78,7 @@ export async function initializeBookmark(): Promise<boolean> {
       bookmarkDB = (e.target as IDBOpenDBRequest).result;
       resolve(true);
     };
-    req.onerror = (_) => reject(req.error);
+    req.onerror = () => reject(req.error);
   });
 }
 
@@ -85,17 +88,17 @@ export async function initializeBookmark(): Promise<boolean> {
  */
 export async function addBookmark(recipe: Recipe): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    if (!bookmarkDB) reject("DB not initialized yet");
+    if (!bookmarkDB) reject(new DBNotInitializedError());
     const objStore = bookmarkDB
-      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, "readwrite")
+      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, 'readwrite')
       .objectStore(BOOKMARK_DB_RECIPE_LIST_NAME);
 
     const req = objStore.add(recipe);
 
-    req.onsuccess = (_) => {
+    req.onsuccess = () => {
       resolve();
     };
-    req.onerror = (_) => reject(req.error);
+    req.onerror = () => reject(req.error);
   });
 }
 
@@ -105,19 +108,19 @@ export async function addBookmark(recipe: Recipe): Promise<void> {
  */
 export async function updateBookmark(recipe: Recipe): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    if (!bookmarkDB) reject("DB not initialized yet");
+    if (!bookmarkDB) reject(new DBNotInitializedError());
     const objStore = bookmarkDB
-      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, "readwrite")
+      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, 'readwrite')
       .objectStore(BOOKMARK_DB_RECIPE_LIST_NAME);
 
-    const req = objStore.index("id").openCursor(IDBKeyRange.only(recipe.id));
+    const req = objStore.index('id').openCursor(IDBKeyRange.only(recipe.id));
 
-    req.onsuccess = (_) => {
-      let cursor = req.result;
+    req.onsuccess = () => {
+      const cursor = req.result;
       cursor.update(recipe);
       resolve();
     };
-    req.onerror = (_) => reject(req.error);
+    req.onerror = () => reject(req.error);
   });
 }
 
@@ -128,21 +131,21 @@ export async function updateBookmark(recipe: Recipe): Promise<void> {
  */
 export async function removeBookmark(id: number): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
-    if (!bookmarkDB) reject("DB not initialized yet");
+    if (!bookmarkDB) reject(new DBNotInitializedError());
     const objStore = bookmarkDB
-      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, "readwrite")
+      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, 'readwrite')
       .objectStore(BOOKMARK_DB_RECIPE_LIST_NAME);
 
-    const req = objStore.index("id").openCursor(id);
+    const req = objStore.index('id').openCursor(id);
 
-    req.onsuccess = (_) => {
-      let cursor = req.result;
+    req.onsuccess = () => {
+      const cursor = req.result;
       if (cursor) {
         cursor.delete();
         resolve(true);
       } else resolve(false);
     };
-    req.onerror = (_) => reject(req.error);
+    req.onerror = () => reject(req.error);
   });
 }
 
@@ -152,17 +155,17 @@ export async function removeBookmark(id: number): Promise<boolean> {
  */
 export async function isInBookmark(id: number): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
-    if (!bookmarkDB) reject("DB not initialized yet");
+    if (!bookmarkDB) reject(new DBNotInitializedError());
     const objStore = bookmarkDB
-      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, "readonly")
+      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, 'readonly')
       .objectStore(BOOKMARK_DB_RECIPE_LIST_NAME);
 
-    const req = objStore.index("id").count(id);
+    const req = objStore.index('id').count(id);
 
-    req.onsuccess = (_) => {
+    req.onsuccess = () => {
       resolve(req.result >= 1);
     };
-    req.onerror = (_) => reject(req.error);
+    req.onerror = () => reject(req.error);
   });
 }
 
@@ -174,32 +177,32 @@ export async function isInBookmark(id: number): Promise<boolean> {
  */
 export async function fetchBookmark(
   page: number = 1,
-  sortingOrder: SortingOrder = "BookmarkedDateReverseChronologicalOrder"
+  sortingOrder: SortingOrder = 'BookmarkedDateReverseChronologicalOrder'
 ): Promise<Recipe[]> {
   return new Promise<Recipe[]>((resolve, reject) => {
-    if (!bookmarkDB) reject("DB not initialized yet");
+    if (!bookmarkDB) reject(new DBNotInitializedError());
     const objStore = bookmarkDB
-      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, "readonly")
+      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, 'readonly')
       .objectStore(BOOKMARK_DB_RECIPE_LIST_NAME);
 
     let req: IDBRequest<IDBCursorWithValue>;
 
     // 整列順序に基づいてカーソルを準備
-    if (sortingOrder.startsWith("Bookmarked")) {
+    if (sortingOrder.startsWith('Bookmarked')) {
       req = objStore.openCursor(
         null,
-        sortingOrder === "BookmarkedDateReverseChronologicalOrder"
-          ? "prev"
-          : "next"
+        sortingOrder === 'BookmarkedDateReverseChronologicalOrder'
+          ? 'prev'
+          : 'next'
       );
     } else {
       req = objStore
-        .index("published_at")
+        .index('published_at')
         .openCursor(
           null,
-          sortingOrder === "PublishedDateReverseChronologicalOrder"
-            ? "prev"
-            : "next"
+          sortingOrder === 'PublishedDateReverseChronologicalOrder'
+            ? 'prev'
+            : 'next'
         );
     }
 
@@ -222,7 +225,7 @@ export async function fetchBookmark(
         cursor.continue();
       } else resolve(recipes);
     };
-    req.onerror = (_) => reject(req.error);
+    req.onerror = () => reject(req.error);
   });
 }
 
@@ -232,17 +235,17 @@ export async function fetchBookmark(
  */
 export async function countBookmark(): Promise<number> {
   return new Promise<number>((resolve, reject) => {
-    if (!bookmarkDB) reject("DB not initialized yet");
+    if (!bookmarkDB) reject(new DBNotInitializedError());
     const objStore = bookmarkDB
-      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, "readonly")
+      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, 'readonly')
       .objectStore(BOOKMARK_DB_RECIPE_LIST_NAME);
 
     const req = objStore.count();
 
-    req.onsuccess = (_) => {
+    req.onsuccess = () => {
       resolve(req.result);
     };
-    req.onerror = (_) => reject(req.error);
+    req.onerror = () => reject(req.error);
   });
 }
 
@@ -251,15 +254,15 @@ export async function countBookmark(): Promise<number> {
  */
 export async function clearBookmark(): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    if (!bookmarkDB) reject("DB not initialized yet");
+    if (!bookmarkDB) reject(new DBNotInitializedError());
     const objStore = bookmarkDB
-      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, "readwrite")
+      .transaction(BOOKMARK_DB_RECIPE_LIST_NAME, 'readwrite')
       .objectStore(BOOKMARK_DB_RECIPE_LIST_NAME);
 
     const req = objStore.clear();
 
-    req.onsuccess = (_) => resolve();
-    req.onerror = (_) => reject(req.error);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
   });
 }
 
@@ -269,16 +272,13 @@ export async function clearBookmark(): Promise<void> {
  * @returns 新たにブックマークに追加された場合は true を、削除された場合は false
  */
 export async function toggleBookmark(recipe: Recipe): Promise<boolean> {
-  return new Promise<boolean>(async (resolve, reject) => {
-    if (!bookmarkDB) reject("DB not initialized yet");
-    if (await isInBookmark(recipe.id)) {
-      removeBookmark(recipe.id);
-      resolve(false);
-    } else {
-      addBookmark(recipe);
-      resolve(true);
-    }
-  });
+  if (!bookmarkDB) throw new DBNotInitializedError();
+  if (await isInBookmark(recipe.id)) {
+    removeBookmark(recipe.id);
+    return false;
+  }
+  addBookmark(recipe);
+  return true;
 }
 
 /**
@@ -291,7 +291,7 @@ export async function prevOrNextPageExists(page: number): Promise<boolean[]> {
   // ブックマーク全体のページ数
   const pageNum = Math.ceil(bookmarkCount / BOOKMARK_RECIPE_AMOUNT_PER_PAGE);
 
-  let prev = page > 1;
-  let next = page < pageNum;
+  const prev = page > 1;
+  const next = page < pageNum;
   return [prev, next];
 }
