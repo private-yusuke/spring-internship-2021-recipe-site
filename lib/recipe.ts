@@ -10,39 +10,41 @@ import api from "./server/api-client";
  * レシピ
  */
 export type Recipe = {
-  // レシピID
+  /** レシピID */
   id: number;
 
-  // レシピ名
+  /** レシピ名 */
   title: string;
 
-  // レシピ概要
+  /** レシピ概要 */
   description: string;
 
-  // レシピ画像。画像がない場合は null。
+  /** レシピ画像。画像がない場合は null。 */
   image_url: string | null;
 
-  // レシピ作者
+  /** レシピ作者 */
   author: {
     user_name: string;
   };
 
-  // レシピを公開した日時。ISO 8601
+  /** レシピを公開した日時。ISO 8601 */
   published_at: string;
 
-  // レシピの手順
+  /** レシピの手順 */
   steps: string[];
 
-  // レシピの材料
+  /** レシピの材料 */
   ingredients: {
-    // 材料名
+    /** 材料名 */
     name: string;
-    // 分量（100g など）
+    /** 分量（100g など） */
     quantity: string;
   }[];
 
-  // 関連するレシピのIDが最大5つ入っている。Poster View などを実装するのに使う。
-  // なお、関連レシピの算出アルゴリズムのできが悪いため関連性が低い可能性がある点に注意。
+  /**
+   * 関連するレシピのIDが最大5つ入っている。Poster View などを実装するのに使う。
+   * なお、関連レシピの算出アルゴリズムのできが悪いため関連性が低い可能性がある点に注意。
+   */
   related_recipes: number[];
 };
 
@@ -50,11 +52,13 @@ export type Recipe = {
  * レシピ取得 API のクエリパラメーター
  */
 export type GetRecipesQueryParameter = {
-  // ページネーションする場合に指定するページ番号。
+  /** ページネーションする場合に指定するページ番号。 */
   page?: number;
 
-  // レシピIDをカンマで区切って複数指定できる。指定できるIDの数の上限は10。
-  // idを指定した場合はページネーションはできないのでidとpageは同時に指定できない。
+  /**
+   * レシピIDをカンマで区切って複数指定できる。指定できるIDの数の上限は10。
+   * idを指定した場合はページネーションはできないのでidとpageは同時に指定できない。
+   */
   id?: string;
 };
 
@@ -62,10 +66,10 @@ export type GetRecipesQueryParameter = {
  * レシピ取得 API のレスポンス
  */
 export type GetRecipesResponse = {
-  // レシピ一覧
+  /** レシピ一覧 */
   recipes: Recipe[];
 
-  // ページネーション可能な場合の次、前のページのリンク
+  /** ページネーション可能な場合の次、前のページのリンク */
   links: {
     next?: string;
     prev?: string;
@@ -96,10 +100,10 @@ export async function getRecipes(
  * レシピ検索 API のクエリパラメーター
  */
 export type SearchRecipesQueryParameter = {
-  // 検索キーワード。マルチバイト文字列の場合は URL Encode が必用。
+  /** 検索キーワード。マルチバイト文字列の場合は URL Encode が必用。 */
   keyword: string;
 
-  // ページネーションする場合に指定するページ番号
+  /** ページネーションする場合に指定するページ番号 */
   page?: number;
 };
 
@@ -107,10 +111,10 @@ export type SearchRecipesQueryParameter = {
  * レシピ検索 API のレスポンス
  */
 export type SearchRecipesResponse = {
-  // 検索にヒットしたレシピ一覧
+  /** 検索にヒットしたレシピ一覧 */
   recipes: Recipe[];
 
-  // ページネーション可能な場合の次、前のページのリンク
+  /** ページネーション可能な場合の次、前のページのリンク */
   links: {
     next?: string;
     prev?: string;
@@ -118,7 +122,7 @@ export type SearchRecipesResponse = {
 };
 
 /**
- * レシピ検索 API を叩き、結果を返します
+ * レシピ検索 API を叩き、結果を返します。
  * @param query キーワードやページ指定が入っているクエリパラメーター
  * @returns レシピ検索 API が返す結果
  */
