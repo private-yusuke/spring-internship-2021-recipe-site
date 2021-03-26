@@ -143,7 +143,9 @@ export async function searchRecipes(
   const params = { keyword: query.keyword, page: null };
   if (query.page) params.page = query.page.toString();
 
-  const url = `${ORIGIN_API_ENDPOINT_SEARCH}?${new URLSearchParams(params)}`;
+  const url = `${ORIGIN_API_ENDPOINT_SEARCH}?${new URLSearchParams(
+    removeEmpty(params)
+  )}`;
   const req = await api(url);
   const json = await req.json();
   if (!req.ok) throw new Error(json.message);
