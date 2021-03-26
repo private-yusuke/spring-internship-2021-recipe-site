@@ -55,7 +55,7 @@ const SearchPage: NextPage<Props> = (props) => {
           prevRecipeAPIParamsString={prevRecipeAPIParamsString}
         />
       ) : (
-        <CurrentPageStateMessage message="メッセージが見つかりませんでした。" />
+        <CurrentPageStateMessage message="該当するレシピが見つかりませんでした。" />
       )}
     </div>
   );
