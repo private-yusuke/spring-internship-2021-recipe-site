@@ -32,9 +32,6 @@ type Props = {
 
 type BookmarkLoadingState = "Loading" | "Error" | "Loaded" | "Reset";
 
-// 反復処理可能なunion型
-// https://www.kabuku.co.jp/developers/good-bye-typescript-enum
-
 const TopPage: NextPage = () => {
   const router = useRouter();
 

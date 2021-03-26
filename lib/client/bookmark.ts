@@ -8,6 +8,8 @@ import { Recipe } from "../recipe";
 
 let bookmarkDB: IDBDatabase;
 
+// 反復処理可能なunion型
+// https://www.kabuku.co.jp/developers/good-bye-typescript-enum
 export const sortingOrders = [
   "PublishedDateChronologicalOrder",
   "PublishedDateReverseChronologicalOrder",
