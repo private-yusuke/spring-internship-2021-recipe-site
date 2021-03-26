@@ -3,7 +3,7 @@ import CurrentPageStateMessage from "../components/current-page-state-message";
 import Head from "../components/head";
 import Header from "../components/header";
 import RecipeList from "../components/recipe-list";
-import { WEBSITE_NAME } from "../lib/constants";
+import { PAGE_TOP_REVALIDATE_INTERVAL, WEBSITE_NAME } from "../lib/constants";
 import { getRecipes, Recipe } from "../lib/recipe";
 
 type Props = {
@@ -63,7 +63,7 @@ export const getStaticProps: GetStaticProps = async () => {
       nextRecipeAPIParamsString,
       prevRecipeAPIParamsString,
     } as Props,
-    revalidate: 60,
+    revalidate: PAGE_TOP_REVALIDATE_INTERVAL,
   };
 };
 

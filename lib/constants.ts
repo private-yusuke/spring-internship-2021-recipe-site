@@ -25,3 +25,8 @@ export const BOOKMARK_DB_VERSION = 1;
 export const BOOKMARK_DB_RECIPE_LIST_NAME = "recipeIDs";
 /** ブックマーク一覧ページにて表示するレシピの1ページ内の個数 */
 export const BOOKMARK_RECIPE_AMOUNT_PER_PAGE = 10;
+
+/** トップページのキャッシュ更新時間（秒） */
+export const PAGE_TOP_REVALIDATE_INTERVAL = 60;
+/** 各レシピページのキャッシュ更新時間（秒） */
+export const PAGE_RECIPE_REVALIDATE_INTERVAL = 300;

@@ -9,7 +9,10 @@ import {
   toggleBookmark,
   updateBookmark,
 } from "../../lib/client/bookmark";
-import { WEBSITE_NAME } from "../../lib/constants";
+import {
+  PAGE_RECIPE_REVALIDATE_INTERVAL,
+  WEBSITE_NAME,
+} from "../../lib/constants";
 import {
   getRecipe,
   getRecipes,
@@ -190,7 +193,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }
     return {
       props: { recipe: recipe },
-      revalidate: 60 * 5,
+      revalidate: PAGE_RECIPE_REVALIDATE_INTERVAL,
     };
   }
 };
