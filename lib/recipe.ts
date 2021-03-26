@@ -78,9 +78,7 @@ export type GetRecipesResponse = {
 };
 
 /**
- *
- * @param obj
- * @returns
+ * 値が null や undefined であるような値を持つエントリーを削除したものを返します。
  */
 function removeEmpty(obj): { [keys: string]: any } {
   // eslint-disable-next-line no-unused-vars
